@@ -9,14 +9,14 @@ def htmlCrawler(word, html):
     # case sensitive
     counter = htmlIndex = wordIndex = 0
     while htmlIndex < len(html): # iterate through all the chars in html
-        while (wordIndex < len(word) and htmlIndex < len(html) and html[htmlIndex] == word[wordIndex]):
+        if (wordIndex < len(word) and htmlIndex < len(html) and html[htmlIndex] == word[wordIndex]):
             wordIndex += 1
             if wordIndex == len(word):
                 counter += 1
                 wordIndex = 0
-            htmlIndex += 1
+        else:
+            wordIndex = 0
         htmlIndex += 1
-        wordIndex = 0
     return counter
 
 print 'Welcome to Launch Locator!'
@@ -32,13 +32,11 @@ keywordFile = open('./config/Keywords.txt', 'r')
 keywordList = keywordFile.read().split('\n')
 keywordFile.close()
 
-# Make program be able to visit website on the website list
+# Pull HTML from listed websites and look for keywords
 for url in websiteList:
     page = urllib2.urlopen(url).read().lower() # stores lowercase page HTML into variable
     for keyword in keywordList:
         wordAppearance = htmlCrawler(keyword.lower(), page)
         print 'The word', keyword, 'appeared', wordAppearance, 'times.'
-
-# Make program count the number of times a keyword appears
 
 # Make program send email about this information

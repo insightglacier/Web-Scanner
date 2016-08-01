@@ -1,8 +1,1 @@
 html
-body
-bootstrap
-https
-div
-title
-meta
-charset
