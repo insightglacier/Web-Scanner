@@ -3,6 +3,7 @@
 # By Jeffrey Chan, August 2016
 
 import urllib2
+import smtplib
 
 def htmlCrawler(word, html):
     # returns the number of times given word appears in given html
@@ -42,3 +43,10 @@ for url in websiteList:
     print '\n'
 
 # Make program send email about this information
+server = smtplib.SMTP('smtp.gmail.com', 587)
+server.starttls()
+server.login("YOUR EMAIL ADDRESS", "YOUR PASSWORD")
+
+msg = "YOUR MESSAGE!"
+server.sendmail("YOUR EMAIL ADDRESS", "EMAIL ADDRESS TO SEND TO", msg)
+server.quit()
