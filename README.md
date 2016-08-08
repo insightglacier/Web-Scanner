@@ -7,3 +7,4 @@ A Python web crawler that searches for information on new commercial satellite l
 Launch Locator is built upon Python 2.7. It uses the following libraries/modules:  
     - urllib2
     - smtplib
+    - BeautifulSoup4 (requires installstaion if you don't already have it)
