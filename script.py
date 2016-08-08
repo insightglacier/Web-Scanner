@@ -43,10 +43,10 @@ for url in websiteList:
     print '\n'
 
 # Make program send email about this information
-server = smtplib.SMTP('smtp.gmail.com', 587)
-server.starttls()
-server.login("YOUR EMAIL ADDRESS", "YOUR PASSWORD")
-
-msg = "YOUR MESSAGE!"
-server.sendmail("YOUR EMAIL ADDRESS", "EMAIL ADDRESS TO SEND TO", msg)
-server.quit()
+# server = smtplib.SMTP('smtp.gmail.com', 587)
+# server.starttls()
+# server.login("YOUR EMAIL ADDRESS", "YOUR PASSWORD")
+#
+# msg = "YOUR MESSAGE!"
+# server.sendmail("YOUR EMAIL ADDRESS", "EMAIL ADDRESS TO SEND TO", msg)
+# server.quit()
