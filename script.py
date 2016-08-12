@@ -23,6 +23,16 @@ def htmlCrawler(word, html):
     return counter
 
 print 'Welcome to Launch Locator!'
+
+reportSwitch = raw_input('Would you like a full report on my search results? (y/n)\n')
+if reportSwitch == 'y':
+    reportSwitch = True
+elif reportSwitch == 'n':
+    reportSwitch = False
+else:
+    print 'Invalid input. By default, I will send out a full report'
+    reportSwitch = True
+
 print 'This program will now begin searching for launch information that might help you!\n'
 
 # Reads URLs from ./config/WebsiteList.txt and stores in websiteList
