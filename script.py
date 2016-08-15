@@ -24,6 +24,7 @@ def htmlCrawler(word, html):
 
 print 'Welcome to Launch Locator!'
 
+# Logic to determine what type of report to send
 reportSwitch = raw_input('Would you like a full report on my search results? (y/n)\n')
 if reportSwitch == 'y':
     reportSwitch = True
@@ -33,46 +34,64 @@ else:
     print 'Invalid input. By default, I will send out a full report'
     reportSwitch = True
 
-print 'This program will now begin searching for launch information that might help you!\n'
+print 'I will now begin searching for launch information that might help you.\n'
 
 # Reads URLs from ./config/WebsiteList.txt and stores in websiteList
 websiteListFile = open("./config/WebsiteList.txt", "r")
 websiteList = websiteListFile.read().split('\n')
 websiteListFile.close()
 
+print 'Website list initially looks like: ', websiteList
+
 # Reads keywords from ./config/Keywords.txt and stores in keywordList
 keywordFile = open('./config/Keywords.txt', 'r')
 keywordList = keywordFile.read().split('\n')
 keywordFile.close()
 
-urlSet = Set([]) # create an empty set to hold other links
+urlSet = Set(websiteList) # create a set from the list original list of websites
+print 'urlSet initially looks like: ', urlSet
 
-# Pull HTML from listed websites and look for keywords
-for url in websiteList:
-    page = urllib2.urlopen(url).read().lower() # stores lowercase page HTML into variable
-    soup = BeautifulSoup(page, 'html.parser') # pass html into BeautifulSoup constructor
-    for link in soup.find_all('a'):         # find external links and add them to urlSet
-        urlSet.add(link.get('href'))
-    print 'Looking for keywords within', url
-    for keyword in keywordList:
-        wordAppearance = htmlCrawler(keyword.lower(), page)
-        print 'The word', keyword, 'appeared', wordAppearance, 'times.'
-    print '\n'
+msg = "YOUR MESSAGE!" # string for email message
 
-# Pull HTML from external websites and look for keywords
-for url in urlSet:
-    page = urllib2.urlopen(url).read().lower()
-    print 'Looking for keywords within', url
+# Pop url's and pass them into search module
+while len(websiteList) > 0:                                   # while there's still links to search
+    currentLink = websiteList.pop()                           # pop a link into a variable
+    print 'After popping, websiteList now looks like: ', websiteList
+    print 'LOOKING AT ', currentLink
+    page = urllib2.urlopen(currentLink).read().lower()        # stores lowercase HTML into variable
+    soup = BeautifulSoup(page, 'html.parser')                 # pass html into BeautifulSoup constructor
+    for link in soup.find_all('a'):                           # find external links and add them to urlSet
+        embeddedURL = link.get('href')
+        print embeddedURL
+        print embeddedURL in urlSet
+        if not embeddedURL in urlSet:
+            print 'Adding ', embeddedURL, ' to urlSet'
+            urlSet.add(embeddedURL)
+            print 'After adding, urlSet now looks like: ', urlSet
+            websiteList.append(embeddedURL)
+    print 'Looking for keywords within', currentLink
     for keyword in keywordList:
         wordAppearance = htmlCrawler(keyword.lower(), page)
         print 'The word', keyword, 'appeared', wordAppearance, 'times.'
     print '\n'
 
 # Make program send email about this information
-# server = smtplib.SMTP('smtp.gmail.com', 587)
-# server.starttls()
-# server.login("YOUR EMAIL ADDRESS", "YOUR PASSWORD")
-#
-# msg = "YOUR MESSAGE!"
-# server.sendmail("YOUR EMAIL ADDRESS", "EMAIL ADDRESS TO SEND TO", msg)
-# server.quit()
+print 'Invoking report system'
+
+if reportSwitch:                                                    # reportSwitch received earlier
+    # logic for sending a report within an email
+    senderAddress = raw_input('What is your Gmail address?\n')
+    senderPassword = raw_input('What is your Gmail password?\n')
+    receiverEmail = raw_input('Who would you like to send the report to?\n')
+
+    print 'Attempting to login to the gmail server with your credentials'
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(senderAddress, senderPassword)
+
+    print 'The message that will be sent is:'
+    print msg
+    server.sendmail(senderAddress, receiverEmail, msg)
+    server.quit()
+else:
+    print 'Have a nice day.'
