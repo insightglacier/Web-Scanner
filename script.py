@@ -107,7 +107,7 @@ while len(websiteList) > 0:
         embeddedURL = link.get('href')
         print embeddedURL
         print (embeddedURL in urlSet) and not htmlCrawler('http', str(embeddedURL)) > 1
-        # if unvisited, unique, valid link (contains 'http'), and parent has > 5 hits, push onto websiteList stack
+        # if unvisited, unique, valid link (contains 'http'), push onto websiteList stack
         if (not embeddedURL in urlSet) and htmlCrawler('http', str(embeddedURL)) == 1 and totalHits > 1000:
             print 'Adding ', embeddedURL, ' to urlSet'
             urlSet.add(embeddedURL)
