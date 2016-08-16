@@ -105,10 +105,13 @@ while len(websiteList) > 0:
     # Processes embedded links second
     for link in soup.find_all('a'):
         embeddedURL = link.get('href')
+        linkHits = 0
+        for keyword in keywordList:
+            linkHits += htmlCrawler(keyword, str(embeddedURL))
         print embeddedURL
         print (embeddedURL in urlSet) and not htmlCrawler('http', str(embeddedURL)) > 1
         # if unvisited, unique, valid link (contains 'http'), push onto websiteList stack
-        if (not embeddedURL in urlSet) and htmlCrawler('http', str(embeddedURL)) == 1 and totalHits > 1000:
+        if (not embeddedURL in urlSet) and htmlCrawler('http', str(embeddedURL)) == 1 and linkHits > 0:
             print 'Adding ', embeddedURL, ' to urlSet'
             urlSet.add(embeddedURL)
             print 'After adding, urlSet now looks like: ', urlSet
