@@ -66,6 +66,7 @@ while len(websiteList) > 0:
     currentLink = websiteList.pop()
     page = urllib2.urlopen(currentLink).read().lower()   # stores lowercase HTML into page
     soup = BeautifulSoup(page, 'html.parser')  # pass html into BeautifulSoup constructor
+    totalHits = 0
 
     # Searches for keywords first
     if fullReport:
@@ -83,6 +84,7 @@ while len(websiteList) > 0:
                 textHits += htmlCrawler(keyword, text)
             if textHits > 0:
                 msg += '\"' + text + '\"\n'
+                totalHits += textHits
             print 'MSG is now:\n', msg
         msg += '\n'
         print '\n'
@@ -91,7 +93,6 @@ while len(websiteList) > 0:
         print 'Going through stats summary logic.'
         print 'Observing:', currentLink
         msg += 'Link: ' + currentLink + '\n'
-        totalHits = 0
         for keyword in keywordList:
             wordAppearance = htmlCrawler(keyword.lower(), page)
             totalHits += wordAppearance
@@ -106,8 +107,8 @@ while len(websiteList) > 0:
         embeddedURL = link.get('href')
         print embeddedURL
         print (embeddedURL in urlSet) and not htmlCrawler('http', str(embeddedURL)) > 1
-        # if unvisited, unique, and valid link (contains 'http'), push onto websiteList stack
-        if (not embeddedURL in urlSet) and htmlCrawler('http', str(embeddedURL)) == 1:
+        # if unvisited, unique, valid link (contains 'http'), and parent has > 5 hits, push onto websiteList stack
+        if (not embeddedURL in urlSet) and htmlCrawler('http', str(embeddedURL)) == 1 and totalHits > 1000:
             print 'Adding ', embeddedURL, ' to urlSet'
             urlSet.add(embeddedURL)
             print 'After adding, urlSet now looks like: ', urlSet
