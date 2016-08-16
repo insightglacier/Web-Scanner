@@ -34,8 +34,8 @@ elif fullReport == 'n':
     print 'Got it. I will send a statistics summary instead.'
     fullReport = False
 else:
-    print 'Invalid input. By default, I will send out a full report'
-    fullReport = True
+    print 'Invalid input. By default, I will send out a stats summary'
+    fullReport = False
 
 print 'I will now begin searching for launch information that might help you.\n'
 
@@ -67,6 +67,7 @@ while len(websiteList) > 0:
     page = urllib2.urlopen(currentLink).read().lower()   # stores lowercase HTML into page
     soup = BeautifulSoup(page, 'html.parser')  # pass html into BeautifulSoup constructor
 
+    # Searches for keywords first
     if fullReport:
         print 'Going through full report logic.'
         print 'Observing:', currentLink
@@ -75,7 +76,7 @@ while len(websiteList) > 0:
         for tag in soup.find_all(["p", "h1", "h2", "h3", "a"]):
             text = tag.string
             print text
-            if (text is None) or not all(ord(c) < 128 for c in text):
+            if (text is None) or not all(ord(c) < 128 for c in text): # can't handle non ascii chars
                 continue
             textHits = 0
             for keyword in keywordList:
@@ -106,7 +107,7 @@ while len(websiteList) > 0:
         print embeddedURL
         print (embeddedURL in urlSet) and not htmlCrawler('http', str(embeddedURL)) > 1
         # if unvisited, unique, and valid link (contains 'http'), push onto websiteList stack
-        if (not embeddedURL in urlSet) and htmlCrawler('http', str(embeddedURL)) > 1:
+        if (not embeddedURL in urlSet) and htmlCrawler('http', str(embeddedURL)) == 1:
             print 'Adding ', embeddedURL, ' to urlSet'
             urlSet.add(embeddedURL)
             print 'After adding, urlSet now looks like: ', urlSet
