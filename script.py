@@ -7,7 +7,7 @@ import smtplib
 from bs4 import BeautifulSoup
 from sets import Set
 
-# Search Algorithm Function
+# Search Function
 def htmlCrawler(word, html):
     # returns the number of times given word appears in given html
     # case sensitive
@@ -49,11 +49,10 @@ keywordFile = open('./config/Keywords.txt', 'r')
 keywordList = keywordFile.read().split('\n')
 keywordFile.close()
 
-urlSet = Set(websiteList) # construct a set from the list original list of websites
+# set will help with identifying unique and unvisited links
+urlSet = Set(websiteList)
 
-print 'websiteList initially looks like: ', websiteList
-print 'urlSet initially looks like: ', urlSet
-
+# Headers for report
 msg = "Launch Locator"
 if fullReport:
     msg += ' Full Report \n\n'
@@ -66,17 +65,13 @@ while len(websiteList) > 0:
     currentLink = websiteList.pop()
     page = urllib2.urlopen(currentLink).read().lower()   # stores lowercase HTML into page
     soup = BeautifulSoup(page, 'html.parser')  # pass html into BeautifulSoup constructor
-    totalHits = 0
 
     # Searches for keywords first
     if fullReport:
-        print 'Going through full report logic.'
         print 'Observing:', currentLink
         msg += 'Link: ' + currentLink + '\n'
-        print soup.find_all(["p", "h1", "h2", "h3", "a"])
-        for tag in soup.find_all(["p", "h1", "h2", "h3", "a"]):
-            text = tag.string
-            print text
+        for tag in soup.find_all(["p", "h1", "h2", "h3", "a"]): # finds listed tags
+            text = tag.string # get just the text from the HTML tags
             if (text is None) or not all(ord(c) < 128 for c in text): # can't handle non ascii chars
                 continue
             textHits = 0
@@ -84,21 +79,16 @@ while len(websiteList) > 0:
                 textHits += htmlCrawler(keyword, text)
             if textHits > 0:
                 msg += '\"' + text + '\"\n'
-                totalHits += textHits
-            print 'MSG is now:\n', msg
         msg += '\n'
         print '\n'
 
     else:
-        print 'Going through stats summary logic.'
         print 'Observing:', currentLink
         msg += 'Link: ' + currentLink + '\n'
         for keyword in keywordList:
             wordAppearance = htmlCrawler(keyword.lower(), page)
-            totalHits += wordAppearance
             print 'The word', keyword, 'appeared', wordAppearance, 'times.'
             msg += 'The word ' + keyword + ' appeared ' + str(wordAppearance) + ' times.' + '\n'
-        print 'MSG is now:\n', msg
         msg += '\n'
         print '\n'
 
@@ -108,13 +98,9 @@ while len(websiteList) > 0:
         linkHits = 0
         for keyword in keywordList:
             linkHits += htmlCrawler(keyword, str(embeddedURL))
-        print embeddedURL
-        print (embeddedURL in urlSet) and not htmlCrawler('http', str(embeddedURL)) > 1
-        # if unvisited, unique, valid link (contains 'http'), push onto websiteList stack
+        # if unvisited, unique, valid (contains 'http'), and contains a keyword, push onto websiteList stack
         if (not embeddedURL in urlSet) and htmlCrawler('http', str(embeddedURL)) == 1 and linkHits > 0:
-            print 'Adding ', embeddedURL, ' to urlSet'
             urlSet.add(embeddedURL)
-            print 'After adding, urlSet now looks like: ', urlSet
             websiteList.append(embeddedURL)
 
 # Logic for Email System
