@@ -1,5 +1,5 @@
-# Launch Locator
-# A Python web crawler for new satellite launch information
+# Web Scanner
+# A Python web crawler
 # By Jeffrey Chan, August 2016
 
 import urllib2
@@ -24,7 +24,7 @@ def htmlCrawler(word, html):
     return counter
 
 # Start of Program
-print 'Welcome to Launch Locator!'
+print 'Welcome to Web Scanner!'
 
 # Logic to determine what type of report to send
 fullReport = raw_input('Would you like a full report on my search results? (y/n)\n')
@@ -37,7 +37,7 @@ else:
     print 'Invalid input. By default, I will send out a stats summary'
     fullReport = False
 
-print 'I will now begin searching for launch information that might help you.\n'
+print 'I will now begin searching for information that might help you.\n'
 
 # Reads URLs from ./config/WebsiteList.txt and stores in websiteList (stack)
 websiteListFile = open("./config/WebsiteList.txt", "r")
@@ -53,7 +53,7 @@ keywordFile.close()
 urlSet = Set(websiteList)
 
 # Headers for report
-msg = "Launch Locator"
+msg = "Web Scanner"
 if fullReport:
     msg += ' Full Report \n\n'
 else:
